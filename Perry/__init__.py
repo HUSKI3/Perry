@@ -1,4 +1,5 @@
 from .host import ext_serve
+from .cleaner import clean
 from random import randint
 # Flask shit
 from flask import render_template
@@ -109,6 +110,8 @@ class _Serve:
   
   def __le__(self, _Pages: Composite, debug=False, port=8080, host='0.0.0.0'):
     pages = []
+    print(f'[Perry] prep to clean')
+    clean('_preped')
     for component in _Pages.pages:
       
       if component.type == pageView:        
