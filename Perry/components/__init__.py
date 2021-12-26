@@ -87,17 +87,18 @@ class Input(component):
     )
 
 class Button(component):
-  def __init__(self, _Name: str, _Type: 'text', cid = None):
+  def __init__(self, _Name: str, _Type: 'text', onClick = '' , cid = ''):
     self._component = component(self, Button)
     self.name = f'<Button id:{hex(id(self))}>'
     self._name = _Name
-    self.id = cid if cid is not None else ''
+    self.id = cid
     self.type = _Type
+    self.onClick =onClick
     
   def build(self, debug=False):
     # here we construct HTML for the component
     deb = f'<!-- Component: {self.name}--->' if debug else ''
     return self._component.build(
       'literal',
-      f"<button type='{self.type}' id='{self.id}'> {self._name} </button>" + deb
+      f"<button type='{self.type}' onclick='{self.onClick}' id='{self.id}'> {self._name} </button>" + deb
     )

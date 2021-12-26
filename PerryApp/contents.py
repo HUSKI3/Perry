@@ -2,6 +2,7 @@ from Perry.components import Label, Image, DIV, Form, Input, Button
 from Perry import ComponentSource, pageView
 from Perry.Extra.jquery import JQueryEngine
 from Perry.Extra.bootstrap import Card, CardTitle,CardText
+from Perry.Extra.pjec import PjecLoader, PjEngine, console
 
 # Let's add JQuery to our website!
 js = JQueryEngine(pageView, cid = 'coolscript')
@@ -9,6 +10,11 @@ js <= (
   # It's best to load it as a file read, but for demo purposes here's a string
   open('PerryApp/coolscript.js','r').read()
 )
+
+engine = PjEngine()
+@engine.function
+def hello( page ):
+  return page.connector('hello', console.log('Hello!'))
 
 # Create page contens
 HomepageContents = ComponentSource(
@@ -42,5 +48,9 @@ HomepageContents = ComponentSource(
     js,
     cclass = 'forjs',
     cid = 'script'
+  ),
+  DIV(
+    Button('PJEC Test','button', onClick='hello()', cid='button'),
+    PjecLoader(engine, hello())
   )
 )
