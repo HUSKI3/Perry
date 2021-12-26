@@ -1,7 +1,7 @@
 from Perry.components import Label, Image, DIV, Form, Input, Button
 from Perry import ComponentSource, pageView
-from Extra.jquery import JQueryEngine
-from Extra.bootstrap import Card, CardTitle,CardText
+from Perry.Extra.jquery import JQueryEngine
+from Perry.Extra.bootstrap import Card, CardTitle,CardText
 
 # Let's add JQuery to our website!
 js = JQueryEngine(pageView, cid = 'coolscript')

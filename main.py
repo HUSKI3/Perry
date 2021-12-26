@@ -1,6 +1,6 @@
 from Perry import component, pageView, serve, Composite, style
-from Extra.bootstrap import bootstrap
-from Extra.jquery import JQueryEngineStrapper
+from Perry.Extra.bootstrap import bootstrap
+from Perry.Extra.jquery import JQueryEngineStrapper
 
 # Create our pages, we want them to inherit pageView behaviour. 
 # As well as other components
