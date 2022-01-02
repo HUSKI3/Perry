@@ -1,8 +1,28 @@
-from .host import ext_serve
-from .cleaner import clean
+##################### 
+# Please dont mind this, python failed to find these due to some weird regex errors
+from flask import Flask, render_template
+app = Flask(__name__)
+
+def ext_serve(port, debug, host, pages):
+  
+  routes = [ ['/'+page['path'], page['func']] for page in pages]
+  
+  for route, func in routes:
+    print('[Flask] Mapped route',route,'with',func)
+    view_func = app.route(route)(func)
+  
+  app.run(debug=debug, port=port, host=host)
+
+import os, re, os.path
+
+def clean(_Path: 'location to clean'):
+  for root, dirs, files in os.walk(_Path):
+    for file in files:
+        os.remove(os.path.join(root, file))
+
+######################
+
 from random import randint
-# Flask shit
-from flask import render_template
 
 class component:
   def __init__(self, _Type: None, _Inherit = False) -> None:

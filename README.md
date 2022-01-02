@@ -27,8 +27,10 @@ Homepage <= {
   'components': HomepageContents # A ComponentSource with our elements
 }
 ```
+
 This page will just show up as an error as we haven't yet created our component source!
 This can be done through importing `ComponentSource`
+
 ```python
 HomepageContents = ComponentSource(
   DIV(
@@ -41,33 +43,37 @@ HomepageContents = ComponentSource(
   )
 )
 ```
+
 You'll get something like this. The trailing comment is used for debugging
+
 ```html
 <body>
-   <!-- Components --->  
+   <!-- Components -->  
    <div id="" class="">
       <h1 id=""> Hello World! </h1>
-      <!-- Component: <Label id:0x7f398481c910>---> 
+      <!-- Component: <Label id:0x7f398481c910> --> 
       <div style="width: 18rem;" id="" class="card, ">
          <div class="card-body">
             <img src="Image URL" id="style=''">
-            <!-- Component: <Image id:0x7f398481c9d0>---> 
+            <!-- Component: <Image id:0x7f398481c9d0> --> 
             <p id="class='card-text'"> Sample Text which has attributes for bootstrap cards </p>
-            <!-- Component: <BootstrapCardText id:0x7f398481ca60>---> 
+            <!-- Component: <BootstrapCardText id:0x7f398481ca60> --> 
          </div>
       </div>
-      <!-- Component: <BootrstrapCard cclass:None id:0x7f398481cb20>---> 
+      <!-- Component: <BootrstrapCard cclass:None id:0x7f398481cb20> --> 
       <h1 id=""> Good bye! </h1>
-      <!-- Component: <Label id:0x7f398481cbe0>---> 
+      <!-- Component: <Label id:0x7f398481cbe0> --> 
    </div>
-   <!-- Component: <DIV cclass:None id:0x7f398481cca0>--->  
+   <!-- Component: <DIV cclass:None id:0x7f398481cca0> -->  
    <p id=""> Running on Perry v0.9 with Debug Mode on! </p>
-   <!-- Component: <Label id:0x7f3984885d90>--->
-   <!-- End of Components --->
+   <!-- Component: <Label id:0x7f3984885d90> -->
+   <!-- End of Components -->
 </body>
 ```
+
 # Custom Element Bundles and Styling
 Want to bundle together multiple elements and create a universal one? That's easy to do!
+
 ```python
 OurCoolNewElement = DIV(
     Label('Hello, I have custom stuff!', 'h1', id = 'CoolTitle'),
@@ -94,7 +100,9 @@ HomepageContents = ComponentSource(
   )
 )
 ```
+
 You'll need to load the style when defining the homepage contents!
+
 ```python
 Homepage <= {
   ...,
@@ -106,6 +114,7 @@ Homepage <= {
 # Adding JS Support
 
 At the moment JS doesn't have direct support through built in components, but you can use `JQueryEngine` and `JQueryEngineStrapper` from Extras. 
+
 ```python
 # First we create the component with JQuery, give it a pageView to wrap around (WIP)
 js = JQueryEngine(pageView, cid = 'coolscript')

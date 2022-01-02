@@ -1,3 +1,4 @@
+rm -r dist/*
 poetry add readme_renderer[md]
 poetry run python3 setup.py sdist
 poetry run twine upload dist/* --verbose
