@@ -132,3 +132,22 @@ In Perry you always serve pages as a Composite collection, this way they are bui
 # Serve our pages as a composite collection
 serve <= Composite(Homepage, About, OtherPage, debug = True)
 ```
+
+# Serving pages with FastAPI
+```python
+from fastapi import FastAPI, Response
+
+app = FastAPI()
+pages = Composite(Homepage, About, OtherPage, debug = True)
+
+# You can check all page info by printing the Composite component
+print(pages)
+
+# You can also get page info by querying it's route,
+# NOTE: The routes do not contain the initial '/'
+print(pages.get(''))
+
+@app.get("/")
+def read_root():
+  return Response(content=pages.get('').run(), media_type="text/html") 
+```
