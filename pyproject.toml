@@ -9,6 +9,8 @@ python = "^3.8"
 Flask = "^2.0.2"
 twine = "2.0"
 readme-renderer = {extras = ["md"], version = "^32.0"}
+fastapi = "^0.70.1"
+uvicorn = "^0.16.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -1,6 +1,7 @@
-from Perry import component, pageView, serve, Composite, style
+from Perry import component, pageView, Composite, style
 from Perry.Extra.bootstrap import bootstrap
 from Perry.Extra.jquery import JQueryEngineStrapper
+import uvicorn
 
 # Create our pages, we want them to inherit pageView behaviour. 
 # As well as other components
@@ -44,5 +45,33 @@ About <= {
   'DOM': Homepage
 }
 
+Pages = Composite(Homepage, About, debug = True)
+
+# Multiple types of serving the pages are supported
+# 
+'Flask'
+# from PerryFlask import serve
 # Serve our pages as a composite collection
-serve <= Composite(Homepage, About, debug = True)
+# serve <= Pages
+#
+
+
+'FastAPI (Single page)'
+# from fastapi import FastAPI, Response
+
+# app = FastAPI()
+# pages = Pages
+
+# You can check all page info by printing the Composite component
+# print(pages)
+
+# You can also get page info by querying it's route,
+# NOTE: The routes do not contain the initial '/'
+# print(pages.get(''))
+
+# @app.get("/")
+# def read_root():
+#    return Response(content=pages.get('').run(), media_type="text/html") 
+
+# Uvicorn for FastAPI
+# uvicorn main:app --reload --host=0.0.0.0 --port=8080

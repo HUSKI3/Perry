@@ -1,18 +1,5 @@
 ##################### 
 # Please dont mind this, python failed to find these due to some weird regex errors
-from flask import Flask, render_template
-app = Flask(__name__)
-
-def ext_serve(port, debug, host, pages):
-  
-  routes = [ ['/'+page['path'], page['func']] for page in pages]
-  
-  for route, func in routes:
-    print('[Flask] Mapped route',route,'with',func)
-    view_func = app.route(route)(func)
-  
-  app.run(debug=debug, port=port, host=host)
-
 import os, re, os.path
 
 def clean(_Path: 'location to clean'):
@@ -40,7 +27,6 @@ class component:
     self.style = _ComponentConfig['styles'] if 'styles' in _ComponentConfig else None
 
   def _proc(self):
-    print(f'I got called! Im {self.name}!')
     return self.html
 
   def build(self, type: None, inner: '<></>', children=[]):
@@ -91,11 +77,6 @@ class pageView:
     self.children = ()
     self.html = ""
 
-class Composite:
-  def __init__(self, *args, debug=False):
-    self.pages = list(args)
-    self.debug = debug
-  
 class style:
   def __init__(self):
     self.config = ''
@@ -115,7 +96,24 @@ class styleGlobal:
   def __init__(self, _Style: style):
     self._ = _Style
 
-class _Serve:
+class builtPage:
+  def __init__(self, _Source: 'Page dictionary source'):
+    self.name = _Source['name']
+    self.path = _Source['path']
+    self.func = _Source['func']
+    self.src  = _Source
+    
+  def __repr__(self):
+    return str(self.src)
+
+  def run(self):
+    '''
+    Run the actual page to get the raw html
+    '''
+    return self.func()
+    
+# GH Issue #1 -  Move all the building components to Composite class and move Flask-Serve over to a seperate module 
+class Composite:
   def _build_div(self, _Source: 'a collection of children inside the div', debug=False):
     ext_ = []
     for o in _Source.children:
@@ -127,12 +125,28 @@ class _Serve:
       else:
         ext_.append(o.build(debug))
     return ext_
-  
-  def __le__(self, _Pages: Composite, debug=False, port=8080, host='0.0.0.0'):
+
+  def __repr__(self):
+    info = ['______Pages______']
+    for page in self.pages:
+      info.append(f'''
+Title: {page['name']}
+Path:  /{page['path']}
+Func:  {page['func']} (returns raw html)
+            ''')
+    return '\n'.join(info)
+
+  def get(self, _Path: 'Path that the page is located on'):
+    return builtPage(self._dict[_Path])
+    
+  def __init__(self, *args, debug=False):
+    self.pages = list(args)
+    self.debug = debug
     pages = []
+    
     print(f'[Perry] prep to clean')
     clean('_preped')
-    for component in _Pages.pages:
+    for component in self.pages:
       
       if component.type == pageView:        
         componentsList = []
@@ -141,14 +155,14 @@ class _Serve:
           print(f'[Builder] Constructing {_.name} of type {_.type}...')
           ext_ = []
           if _.type == components.DIV:
-            ext_ = self._build_div(_, debug=_Pages.debug)
-            chtml = _.build(ext_, debug=_Pages.debug)
+            ext_ = self._build_div(_, debug=debug)
+            chtml = _.build(ext_, debug=debug)
           else:
-            chtml = _.build(_Pages.debug)
+            chtml = _.build(debug)
           componentsList.append(chtml)
 
-        if _Pages.debug:
-          componentsList.append(components.Label("Running on Perry v0.9 with Debug Mode on!", 'p').build(_Pages.debug))
+        if debug:
+          componentsList.append(components.Label("Running on Perry v0.9 with Debug Mode on!", 'p').build(debug))
         
         print(f'[Perry] Preparing page ({component.name}) for flask...')
         a, b = component.build('pageView', '', children = componentsList)
@@ -164,8 +178,7 @@ class _Serve:
         })
       else:
         print(f'Unsupported type {component.type}')
-
-        
-    ext_serve(debug=debug, port=port, host=host, pages=pages)
-
-serve = _Serve()
+    self.pages = pages
+    self._dict = {}
+    for page in pages:
+      self._dict[page['path']] = page
