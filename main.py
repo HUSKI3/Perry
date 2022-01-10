@@ -57,9 +57,9 @@ Pages = Composite(Homepage, About, debug = True)
 
 
 'FastAPI (Single page)'
-# from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response
 
-# app = FastAPI()
+app = FastAPI()
 # pages = Pages
 
 # You can check all page info by printing the Composite component
@@ -69,9 +69,9 @@ Pages = Composite(Homepage, About, debug = True)
 # NOTE: The routes do not contain the initial '/'
 # print(pages.get(''))
 
-# @app.get("/")
-# def read_root():
-#    return Response(content=pages.get('').run(), media_type="text/html") 
+@app.get("/")
+def read_root():
+  return Response(content=Pages.get('').run(), media_type="text/html") 
 
 # Uvicorn for FastAPI
 # uvicorn main:app --reload --host=0.0.0.0 --port=8080

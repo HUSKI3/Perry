@@ -97,8 +97,15 @@ class Element:
 
 # Wrappers
 class Events:
-  def __init__(self, *_Components: "A tuple or list of components that will be fed to the constructor.\nORDER IS IMPORTANT!"):
-    self.events = _Components
+  def __init__(self, *_Components: "A tuple or list of components that will be fed to the constructor.\nORDER IS IMPORTANT!", debug=False):
+    self.debug  = debug
+    if debug:
+      self.events = []
+      for x in _Components:
+        self.events.append(x)
+        self.events.append(console.log(str( x.skel )))
+    else:
+      self.events = _Components
     
 class Window:
   def __init__(self, _Page):
@@ -108,11 +115,11 @@ class Window:
     return Element(self.page,_ElementID)
 
   def alert(self, _Message: "Message to show in the alert"):
-    return endComponent("alert({})", _Message)
+    return endComponent("alert({});", _Message)
   
 class console:
   def log(_Text):
-    return endComponent("console.log('{}')", _Text)
+    return endComponent("console.log('{}');", _Text)
 
 
 from Perry import component

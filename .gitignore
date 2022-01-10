@@ -3,3 +3,4 @@ build
 dist
 _preped/*
 **/__pycache__
+NexomiaApp/*

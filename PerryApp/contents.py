@@ -16,14 +16,22 @@ engine = PjEngine()
 @engine.function
 def hello( page ):
   window = page.window
-  
   events = Events(
-    window.get('text').set(
-      random.int(0,20)
-    )
+    window.get('text').set(random.int(0,20)),
+    debug=True
   )
   return page.connector('hello', events)
 
+@engine.function
+def alert( page ):
+  window = page.window
+  events = Events(
+    window.alert('Howdy, this is a test pjec function with multiple events'),
+    window.get('rand').set('Howdy'),
+    debug=True
+  )
+  return page.connector('amber', events)
+  
 # Create page contens
 HomepageContents = ComponentSource(
   ######## This is the meme maker
@@ -61,7 +69,12 @@ HomepageContents = ComponentSource(
   Label('Random number generator!', 'h1'),
   DIV(
     Label('Random number here', 'p',cid='text'),
-    Button('Next random number','button', onClick='hello()', cid='button'),
-    PjecLoader(engine, hello())
-  )
+    Button('Next random number','button', onClick='hello()', cid='button')
+  ),
+  DIV(
+    Label('Text here', 'p', cid='rand'),
+    Button('Alert test', 'button',onClick='amber()')
+  ),
+  # Recommneded to put the PJEC Loader component in the bottom
+  PjecLoader(engine, hello(), alert())
 )
