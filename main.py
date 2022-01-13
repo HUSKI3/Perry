@@ -11,7 +11,7 @@ ourCustomStyle = style()
 
 
 # Import contents for a pageView
-from PerryApp import HomepageContents
+from NexomiaApp import HomepageContents
 
 # Custom style
 ourCustomStyle <= {
@@ -20,14 +20,11 @@ ourCustomStyle <= {
   'css' : '''
   * {
     text-align: center;
-    margin: 0 auto;
+    margin: 0;
+    font-family: "Inter",sans-serif;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
   } 
-  .mycooldiv {
-    color: white;
-    border: 10px solid black;
-    padding: 15px;
-    background: black;
-  }
   '''}
 
 # Assign page contents

@@ -57,6 +57,7 @@ class endComponent:
     self.skel = _Skeleton
     self.args = []
     for arg in args:
+
       print(arg,'<>',type(arg))
       if type(arg) == endComponent:
         self.args.append(arg.build('global')[:-2])
@@ -64,9 +65,14 @@ class endComponent:
         if type(arg) == str:
           self.args.append('"'+arg+'"')
     self.format = format
+    print('===========>', self.args)
   def build(self, _Name, format=True):
     if _Name == 'global' and format:
-      innard = self.skel.format(*self.args).replace('\n',' ')
+      try:
+        innard = self.skel.format(*self.args).replace('\n',' ')
+      except:
+        innard = self.skel.replace('\n',' ')
+      print('======[]===>',innard)
       return f"{innard}\n"
     elif _Name == 'global':
       return self.skel
@@ -77,20 +83,28 @@ class endComponent:
       return self.skel
 
 class Element:
-  _skel = 'var {variable} = document.getElementById("{id}");\n{variable}.textContent = {value};'
+  _skel_set = 'var {variable} = document.getElementById("{id}");\n{variable}.textContent = {value};'
+  _skel_get = 'document.getElementById("{id}").value;'
   
   def __init__(self, _Page, _ID):
     self.id = _ID
     self.page = _Page
+    self.value = self.get()
     
   def set(self, _Value: "Value to set the element to"):
     if type(_Value) != str:
       _Value = _Value.build('global')
     else:
       _Value = '"'+_Value+'"'
-    return endComponent(Element._skel.format(variable=self.page.gen_variable_name(), 
+    return endComponent(Element._skel_set.format(variable=self.page.gen_variable_name(), 
                                 id=self.id, 
                                 value=_Value
+                                ),
+                       format = False
+                       )
+  def get(self):
+    return endComponent(Element._skel_get.format(
+                                id=self.id
                                 ),
                        format = False
                        )
@@ -118,8 +132,8 @@ class Window:
     return endComponent("alert({});", _Message)
   
 class console:
-  def log(_Text):
-    return endComponent("console.log('{}');", _Text)
+  def log(*_Text):
+    return endComponent("console.log({});", *_Text)
 
 
 from Perry import component

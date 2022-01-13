@@ -117,6 +117,7 @@ class Composite:
   def _build_div(self, _Source: 'a collection of children inside the div', debug=False):
     ext_ = []
     for o in _Source.children:
+      print(o)
       print(f'[DIV] Constructing {o.name} of type {o.type}...')
       if o.type == components.DIV:
         _inner = self._build_div(o, debug=debug)

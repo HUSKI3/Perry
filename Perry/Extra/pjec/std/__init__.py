@@ -1,3 +1,3 @@
-from . import _random
+from . import _random, requests
 
 random = _random.random
