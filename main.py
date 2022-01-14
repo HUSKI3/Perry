@@ -7,11 +7,12 @@ import uvicorn
 # As well as other components
 Homepage = component(pageView, _Inherit = True)
 About = component(pageView, _Inherit = True) 
+LoginPage = component(pageView, _Inherit = True)
 ourCustomStyle = style()
 
 
 # Import contents for a pageView
-from NexomiaApp import HomepageContents
+from NexomiaApp import HomepageContents, LoginPageContents
 
 # Custom style
 ourCustomStyle <= {
@@ -36,13 +37,21 @@ Homepage <= {
   'components': HomepageContents
 }
 
+LoginPage <= {
+  'title': 'Login',
+  'path':'login',
+  'styles': [bootstrap, ourCustomStyle, JQueryEngineStrapper],
+  'DOM': pageView.DOM,
+  'components': LoginPageContents
+}
+
 About <= {
   'title': 'About',
   'path':'about',
   'DOM': Homepage
 }
 
-Pages = Composite(Homepage, About, debug = True)
+Pages = Composite(Homepage, About, LoginPage, debug = True)
 
 # Multiple types of serving the pages are supported
 # 
@@ -69,6 +78,10 @@ app = FastAPI()
 @app.get("/")
 def read_root():
   return Response(content=Pages.get('').run(), media_type="text/html") 
+
+@app.get("/login")
+def read_login():
+  return Response(content=Pages.get('login').run(), media_type="text/html") 
 
 # Uvicorn for FastAPI
 # uvicorn main:app --reload --host=0.0.0.0 --port=8080

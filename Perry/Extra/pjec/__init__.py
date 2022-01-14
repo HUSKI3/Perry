@@ -10,10 +10,14 @@ class page:
   def connector(self, _Name, _Component):
     if type(_Component) == Events:
       c = []
-      for event in _Component.events:
-        print(event.skel)
-        self._connections.append(event)
-        c.append( event.build('global', format=True) )
+      for i, event in enumerate(_Component.events):
+        if event is not None:
+          print(event.skel)
+          self._connections.append(event)
+          c.append( event.build('global', format=True) )
+        else:
+          print(f'[WARNING] Event at pos {i} is currently None, ignore?\n(This can happen when handling variable creation incorrectly, be ware!)')
+          input()
       return "function {}() {{{}}}".format(_Name, '\n'.join(c))
     else:
       self._connections.append(_Component)
@@ -53,20 +57,24 @@ class PjEngine:
     
 
 class endComponent:
-  def __init__(self, _Skeleton, *args, format=True):
+  def __init__(self, _Skeleton, *args, format=True, _StringPa=True):
     self.skel = _Skeleton
     self.args = []
     for arg in args:
 
       print(arg,'<>',type(arg))
       if type(arg) == endComponent:
+        # Yes very big brain implementation ik ik tyty
         self.args.append(arg.build('global')[:-2])
       else:
         if type(arg) == str:
-          self.args.append('"'+arg+'"')
+          if _StringPa:
+            self.args.append('"'+arg+'"')
+          else:
+            self.args.append(arg)
     self.format = format
     print('===========>', self.args)
-  def build(self, _Name, format=True):
+  def build(self, _Name, format=True, special=False): # Special is dangerous!
     if _Name == 'global' and format:
       try:
         innard = self.skel.format(*self.args).replace('\n',' ')
@@ -74,6 +82,8 @@ class endComponent:
         innard = self.skel.replace('\n',' ')
       print('======[]===>',innard)
       return f"{innard}\n"
+    elif _Name == 'global' and special == True:
+      return self.skel.format(*self.args)
     elif _Name == 'global':
       return self.skel
     elif format:
@@ -120,16 +130,43 @@ class Events:
         self.events.append(console.log(str( x.skel )))
     else:
       self.events = _Components
-    
+
+class setVar:
+  def __init__(self):
+    pass
+  def __le__(self, *args):
+    args = list(args[0])
+    if type(args[1]) is not str:
+      args[1] = args[1].build('global')
+    return endComponent(f"{args[0]} = {args[1]}", format=False, _StringPa=False)
+    input()
+
 class Window:
   def __init__(self, _Page):
     self.page = _Page
+    self.set_var = setVar()
+
+  def get_var(self, _Name:'Name of the variable'):
+    # [TODO] Stupid fix for now, fix the string formatting here for variables? But I don't think anyone in their right mind would use "" in a variable
+    return endComponent(
+      "{};", 
+      _Name,
+      _StringPa=False
+    )
     
   def get(self, _ElementID: "ID of the element you want to edit"):
     return Element(self.page,_ElementID)
 
   def alert(self, _Message: "Message to show in the alert"):
     return endComponent("alert({});", _Message)
+    
+  def set_cookie(self, _Name: 'Name of the variable', _Content:'Contents of the variable'):
+    return endComponent(
+      "document.cookie = '{}='+{};", 
+      _Name,
+      _Content,
+      _StringPa=False
+    )
   
 class console:
   def log(*_Text):
