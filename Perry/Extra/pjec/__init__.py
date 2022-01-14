@@ -226,4 +226,8 @@ class PjecLoader(component):
 class PJECStrapper:
   source = "PJEC"
   ctype = 'js'
-  js = open('pjec.js','r').read()
+  try:
+    js = open('pjec.js','r').read()
+  except:
+    print('[Warning] Experimental features disabled. If you would like to use them, download `pjec.js` and put it into your projects root folder.')
+    input()
