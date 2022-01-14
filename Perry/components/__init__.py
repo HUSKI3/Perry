@@ -47,7 +47,7 @@ class Image(component):
     deb = f'<!-- Component: {self.name}--->' if debug else ''
     return self._component.build(
       'literal',
-      f"<img src='{self._source}' id = {self.id} style='{self.style}'>" + deb
+      f"<img src='{self._source}' id = '{self.id}' style='{self.style}'>" + deb
     )
 
 class DIV(component):

@@ -26,7 +26,24 @@ ourCustomStyle <= {
     font-family: "Inter",sans-serif;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
+    --background-light: #4c5360;
+    --background-primary-alt: #404754;
+    --background-primary: #373d49;
+    --background-secondary-alt2: #363b47;
+    --background-secondary-alt: #333844;
+    --background-secondary: #2c313d;
+    --accent: #7794ce;
+    --accent-green: #52c96c;
+    --accent-yellow: #dcdd6e;
+    --accent-alt: #6d87bc;
+    --accent-dark: #4e5f82;
+    --text-primary: #dadfea;
+    --text-secondary: #68707f;
+    --text-negative: #ff3d70;
   } 
+  div {
+    display: block;
+  }
   '''}
 
 # Assign page contents
@@ -52,7 +69,7 @@ About <= {
   'DOM': Homepage
 }
 
-Pages = Composite(Homepage, About, LoginPage, debug = True)
+Pages = Composite(Homepage, About, LoginPage)
 
 # Multiple types of serving the pages are supported
 # 
