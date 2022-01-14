@@ -60,6 +60,7 @@ class endComponent:
   def __init__(self, _Skeleton, *args, format=True, _StringPa=True):
     self.skel = _Skeleton
     self.args = []
+  
     for arg in args:
 
       print(arg,'<>',type(arg))
@@ -74,6 +75,10 @@ class endComponent:
             self.args.append(arg)
     self.format = format
     print('===========>', self.args)
+
+  def raw(self):
+    return self.build('global')[:-2]
+  
   def build(self, _Name, format=True, special=False): # Special is dangerous!
     if _Name == 'global' and format:
       try:
@@ -159,6 +164,12 @@ class Window:
 
   def alert(self, _Message: "Message to show in the alert"):
     return endComponent("alert({});", _Message)
+
+  def redirect(self, _Url: "URL to redirect to"):
+    return endComponent(
+      'window.location.replace({});',
+      _Url
+    )
     
   def set_cookie(self, _Name: 'Name of the variable', _Content:'Contents of the variable'):
     return endComponent(
@@ -167,7 +178,30 @@ class Window:
       _Content,
       _StringPa=False
     )
-  
+    
+  def get_cookie(self, _Name: 'Name of the variable'):
+    return endComponent(
+      "getCookie({});", 
+      _Name,
+    )
+    
+  def case(self, _Var, _Op, _Comp):
+    if type(_Var) == endComponent: _Var = _Var.build('global')[:-2]
+    if type(_Comp) == endComponent: _Comp = _Comp.build('global')
+    return ThenComponent(
+      "if ({} {} {})".format(_Var, _Op, _Comp)
+    )
+
+class ThenComponent:
+  def __init__(self, skel):
+    self.skel = skel + ' {{{}}};'
+    
+  def then(self, *_Events):
+    built = []
+    for event in _Events:
+      built.append((event.build('global')))
+    return endComponent(self.skel.format(''.join(built)))
+
 class console:
   def log(*_Text):
     return endComponent("console.log({});", *_Text)
@@ -188,3 +222,8 @@ class PjecLoader(component):
       'literal',
       f"{self.funcs} </script>" + deb
     )
+
+class PJECStrapper:
+  source = "PJEC"
+  ctype = 'js'
+  js = open('pjec.js','r').read()

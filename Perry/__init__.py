@@ -42,6 +42,8 @@ class component:
             style.append(_.html)
           elif _.ctype == 'css':
             style.append(f"<style>{_.css}</style>")
+          elif _.ctype == 'js':
+            style.append(f"<script>{_.js}</script>")
       style ='\n'.join(style).replace('"',"'") if style is not None else ''
       children = '\n  '.join(children)
       skel = f'''

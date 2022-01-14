@@ -51,7 +51,7 @@ class Image(component):
     )
 
 class DIV(component):
-  def __init__(self, *args, cid = None, cclass = None, style=''):
+  def __init__(self, *args, cid = None, cclass = None, style='', onLoad=''):
     self._component = component(self, DIV)
     self.name = f'<DIV cclass:{cclass} id:{hex(id(self))}>'
     self.children = list(args)
@@ -59,14 +59,21 @@ class DIV(component):
     self.style = style
     self.cclass = cclass if cclass is not None else ''
     self.type = DIV
+    self.onLoad = onLoad
     
   def build(self, _HTML: 'Raw html of built objects' ,debug=False):
     # here we construct HTML for the component
     _HTML = ' '.join(_HTML)
+    if self.onLoad:
+      ext = f'''<script type="text/javascript">
+   {self.onLoad};
+</script>'''
+    else:
+      ext = ''
     deb = f'<!-- Component: {self.name}--->' if debug else ''
     return self._component.build(
       'literal',
-      f"<div id = '{self.id}' class = '{self.cclass}' style='{self.style}'> {_HTML} </div>" + deb
+      f"<div id = '{self.id}' class = '{self.cclass}' style='{self.style}'> {_HTML} </div>{ext}" + deb
     )
     
   def __call__(self, *args):

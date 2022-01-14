@@ -1,6 +1,7 @@
 from Perry import component, pageView, Composite, style
 from Perry.Extra.bootstrap import bootstrap
 from Perry.Extra.jquery import JQueryEngineStrapper
+from Perry.Extra.pjec import PJECStrapper
 import uvicorn
 
 # Create our pages, we want them to inherit pageView behaviour. 
@@ -40,7 +41,7 @@ Homepage <= {
 LoginPage <= {
   'title': 'Login',
   'path':'login',
-  'styles': [bootstrap, ourCustomStyle, JQueryEngineStrapper],
+  'styles': [bootstrap, ourCustomStyle, PJECStrapper],
   'DOM': pageView.DOM,
   'components': LoginPageContents
 }
