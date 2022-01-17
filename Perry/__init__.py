@@ -167,7 +167,7 @@ Func:  {page['func']} (returns raw html)
         if debug:
           componentsList.append(components.Label("Running on Perry v0.9 with Debug Mode on!", 'p').build(debug))
         
-        print(f'[Perry] Preparing page ({component.name}) for flask...')
+        print(f'[Perry] Preparing page ({component.name})...')
         a, b = component.build('pageView', '', children = componentsList)
         html = component.html.replace('\n','')
         with open('_preped/.'+b,'w+') as f:

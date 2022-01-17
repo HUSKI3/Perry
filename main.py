@@ -50,7 +50,7 @@ ourCustomStyle <= {
 Homepage <= {
   'title': 'Home',
   'path':'',
-  'styles': [bootstrap, ourCustomStyle, JQueryEngineStrapper],
+  'styles': [bootstrap, ourCustomStyle, PJECStrapper],
   'DOM': pageView.DOM,
   'components': HomepageContents
 }

@@ -7,7 +7,7 @@ class page:
     self.variables = ['p']
     self.window = Window(self)
     
-  def connector(self, _Name, _Component):
+  def connector(self, _Name, _Component, requires = ''):
     if type(_Component) == Events:
       c = []
       for i, event in enumerate(_Component.events):
@@ -18,7 +18,7 @@ class page:
         else:
           print(f'[WARNING] Event at pos {i} is currently None, ignore?\n(This can happen when handling variable creation incorrectly, be ware!)')
           input()
-      return "function {}() {{{}}}".format(_Name, '\n'.join(c))
+      return "function {}({}) {{{}}}".format(_Name, requires, '\n'.join(c))
     else:
       self._connections.append(_Component)
       return _Component.build(_Name)
@@ -146,18 +146,23 @@ class setVar:
     return endComponent(f"{args[0]} = {args[1]}", format=False, _StringPa=False)
     input()
 
+
 class Window:
   def __init__(self, _Page):
     self.page = _Page
     self.set_var = setVar()
 
-  def get_var(self, _Name:'Name of the variable'):
+  def get_var(self, _Name:'Name of the variable', _Get=''):
     # [TODO] Stupid fix for now, fix the string formatting here for variables? But I don't think anyone in their right mind would use "" in a variable
+    src = "{}"+f"{_Get};" if _Get else "{};"
     return endComponent(
-      "{};", 
+      src, 
       _Name,
       _StringPa=False
     )
+
+  def call(self, _Function, vars=['']):
+    return endComponent(f"{_Function}"+"({});", *vars)
     
   def get(self, _ElementID: "ID of the element you want to edit"):
     return Element(self.page,_ElementID)
@@ -179,9 +184,10 @@ class Window:
       _StringPa=False
     )
     
-  def get_cookie(self, _Name: 'Name of the variable'):
+  def get_cookie(self, _Name: 'Name of the variable', get=''):
+    src = "JSON.parse(getCookie({}))"+f".{get};" if get else "getCookie({});"
     return endComponent(
-      "getCookie({});", 
+      src, 
       _Name,
     )
     
@@ -202,10 +208,28 @@ class ThenComponent:
       built.append((event.build('global')))
     return endComponent(self.skel.format(''.join(built)))
 
-class console:
-  def log(*_Text):
-    return endComponent("console.log({});", *_Text)
+# Phase === return,
+# Phase null if none
+def phase(_Variable: 'Variable to return'):
+  return endComponent('return {}', _Variable)
 
+class console:
+  def log(*_Text, _ThisIsAString=True):
+    return endComponent(
+      "console.log({});", 
+      *_Text,
+      _StringPa = _ThisIsAString
+    )
+
+# WARNS - add later
+warns = '''
+<script>
+/*This contains all experimental methods that haven't been loaded so they warn u yk*/
+function getCookie(cName) {
+  console.log('[Warning] You are trying to use an experimental feature and havent loaded pjec.js')
+}
+</script>
+'''
 
 from Perry import component
 class PjecLoader(component):
@@ -223,6 +247,7 @@ class PjecLoader(component):
       f"{self.funcs} </script>" + deb
     )
 
+
 class PJECStrapper:
   source = "PJEC"
   ctype = 'js'
@@ -230,4 +255,4 @@ class PJECStrapper:
     js = open('pjec.js','r').read()
   except:
     print('[Warning] Experimental features disabled. If you would like to use them, download `pjec.js` and put it into your projects root folder.')
-    input()
+    input('Press Enter to continue')
