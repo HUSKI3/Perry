@@ -1,6 +1,6 @@
 ##################### 
 # Please dont mind this, python failed to find these due to some weird regex errors
-import os, re, os.path
+import os, os.path
 
 def clean(_Path: 'location to clean'):
   for root, dirs, files in os.walk(_Path):
@@ -88,11 +88,37 @@ class style:
     self.html = _Config['html'] if 'html' in _Config else ''
 
 class ComponentSource:
+  def _build_div(self, _Source: 'a collection of children inside the div', debug=False):
+    ext_ = []
+    for o in _Source.children:
+      print(o)
+      print(f'[DIV] Constructing {o.name} of type {o.type}...')
+      if o.type == components.DIV:
+        _inner = self._build_div(o, debug=debug)
+        chtml = o.build(_inner, debug=debug)
+        ext_.append(chtml)
+      else:
+        ext_.append(o.build(debug))
+    return ext_
+    
   def __init__(self, *args):
     self.components = list(args)
     
   def add(self, _Component: 'Desired Component'):
     self.components.append(_Component)
+
+  def raw(self, debug=False):
+    componentsList = []
+    for _ in self.components:
+      print(f'[Builder] Constructing {_.name} of type {_.type}...')
+      ext_ = []
+      if _.type == components.DIV:
+        ext_ = self._build_div(_, debug=debug)
+        chtml = _.build(ext_, debug=debug)
+      else:
+        chtml = _.build(debug)
+      componentsList.append(chtml)
+    return '\n'.join(componentsList)
 
 class styleGlobal:
   def __init__(self, _Style: style):

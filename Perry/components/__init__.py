@@ -60,6 +60,9 @@ class DIV(component):
     self.cclass = cclass if cclass is not None else ''
     self.type = DIV
     self.onLoad = onLoad
+
+  def add(self, *_Source):
+    self.children += list(_Source)
     
   def build(self, _HTML: 'Raw html of built objects' ,debug=False):
     # here we construct HTML for the component

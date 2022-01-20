@@ -1,4 +1,5 @@
 import random
+from Perry import component, ComponentSource
 
 class page:
   def __init__(self):
@@ -57,16 +58,18 @@ class PjEngine:
     
 
 class endComponent:
-  def __init__(self, _Skeleton, *args, format=True, _StringPa=True):
+  def __init__(self, _Skeleton, *args, format=True, _StringPa=True, Special=False):
     self.skel = _Skeleton
     self.args = []
+    self.sp = Special
   
     for arg in args:
 
       print(arg,'<>',type(arg))
       if type(arg) == endComponent:
         # Yes very big brain implementation ik ik tyty
-        self.args.append(arg.build('global')[:-2])
+        arg = arg.build('global')[:-2]
+        self.args.append(arg)
       else:
         if type(arg) == str:
           if _StringPa:
@@ -82,7 +85,10 @@ class endComponent:
   def build(self, _Name, format=True, special=False): # Special is dangerous!
     if _Name == 'global' and format:
       try:
-        innard = self.skel.format(*self.args).replace('\n',' ')
+        if self.sp:
+          innard = self.skel.format(','.join(self.args)).replace('\n',' ')
+        else:
+          innard = self.skel.format(*self.args).replace('\n',' ')
       except:
         innard = self.skel.replace('\n',' ')
       print('======[]===>',innard)
@@ -98,27 +104,46 @@ class endComponent:
       return self.skel
 
 class Element:
-  _skel_set = 'var {variable} = document.getElementById("{id}");\n{variable}.textContent = {value};'
-  _skel_get = 'document.getElementById("{id}").value;'
   
   def __init__(self, _Page, _ID):
     self.id = _ID
     self.page = _Page
     self.value = self.get()
+
+    self._skel_set = 'var {variable} = document.getElementById("{id}");\n{variable}.textContent = {value};'
+    self._skel_set_html = 'var {variable} = document.getElementById("{id}");\n{variable}.innerHTML = {value};'
     
   def set(self, _Value: "Value to set the element to"):
-    if type(_Value) != str:
+    if type(_Value) == endComponent:
       _Value = _Value.build('global')
+    elif type(_Value) == ComponentSource:
+      _Value = "`"+_Value.raw()+"`"
+      self._skel_set = self._skel_set_html
     else:
       _Value = '"'+_Value+'"'
-    return endComponent(Element._skel_set.format(variable=self.page.gen_variable_name(), 
+    return endComponent(self._skel_set.format(variable=self.page.gen_variable_name(), 
+                                id=self.id, 
+                                value=_Value
+                                ),
+                       format = False
+                       )
+  def add(self, _Value: "Value to add"):
+    _add_skel = "document.getElementById('{id}').insertAdjacentHTML('beforeend', {value});"
+    if type(_Value) == endComponent:
+      _Value = _Value.build('global')
+    elif type(_Value) == ComponentSource:
+      _Value = "`"+_Value.raw()+"`"
+    else:
+      _Value = '"'+_Value+'"'
+    return endComponent(_add_skel.format(variable=self.page.gen_variable_name(), 
                                 id=self.id, 
                                 value=_Value
                                 ),
                        format = False
                        )
   def get(self):
-    return endComponent(Element._skel_get.format(
+    self._skel_get = 'document.getElementById("{id}").value;'
+    return endComponent(self._skel_get.format(
                                 id=self.id
                                 ),
                        format = False
@@ -191,12 +216,26 @@ class Window:
       _Name,
     )
     
-  def case(self, _Var, _Op, _Comp):
-    if type(_Var) == endComponent: _Var = _Var.build('global')[:-2]
-    if type(_Comp) == endComponent: _Comp = _Comp.build('global')
+  def case(self, *args):
+    newargs = []
+    for arg in args:
+      if type(arg) == endComponent:
+        arg = arg.build('global')[:-2]
+      newargs.append(arg)
     return ThenComponent(
-      "if ({} {} {})".format(_Var, _Op, _Comp)
+      "if ({})".format(' '.join(newargs))
     )
+
+  def loop(self, *args):
+    newargs = []
+    for arg in args:
+      if type(arg) == endComponent:
+        arg = arg.build('global')[:-2]
+      newargs.append(arg)
+    return ThenComponent(
+      "for ({})".format(' '.join(newargs))
+    )
+
 
 class ThenComponent:
   def __init__(self, skel):
@@ -218,7 +257,8 @@ class console:
     return endComponent(
       "console.log({});", 
       *_Text,
-      _StringPa = _ThisIsAString
+      _StringPa = _ThisIsAString,
+      Special = True
     )
 
 # WARNS - add later
@@ -231,7 +271,6 @@ function getCookie(cName) {
 </script>
 '''
 
-from Perry import component
 class PjecLoader(component):
   def __init__(self, _Engine, *_Functions: 'Your JS functions'):
     self._component = component(self, PjecLoader)
