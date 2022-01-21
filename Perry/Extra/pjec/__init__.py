@@ -260,7 +260,25 @@ class console:
       _StringPa = _ThisIsAString,
       Special = True
     )
-
+def isnt(*_Text):
+  return endComponent(
+      "!{};", 
+      *_Text,
+      _StringPa = False,
+      Special = True
+    )
+  
+def empty(*_Text):
+  """
+  To be used with functions and variables only.
+  """
+  return endComponent(
+      "empty({});", 
+      *_Text,
+      _StringPa = False,
+      Special = True
+    )
+    
 # WARNS - add later
 warns = '''
 <script>
